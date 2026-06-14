@@ -123,6 +123,30 @@ def start_giveaway(message):
     except Exception as e:
         bot.reply_to(message, f"❌ System Error: {str(e)}")
 
+# 3. USER COMMAND: START / DEEP LINK HELP
+@bot.message_handler(commands=['start'])
+def start_command(message):
+    start_text = (
+        "🎉 Welcome to the Lucky Draw Bot! 🎉\n\n"
+        "📝 How to Enter:\n"
+        "1️⃣ Start this bot in DM.\n"
+        "2️⃣ Run /buyticket to buy 1 ticket.\n"
+        "3️⃣ Run /buyticket 5 to buy multiple tickets.\n"
+        "4️⃣ Each paid ticket enters you into the exclusive prize draw.\n\n"
+        "📊 Use /stats to view the current giveaway odds.\n"
+        "🍀 Good luck!"
+    )
+
+    bot.send_message(message.chat.id, start_text)
+
+    args = message.text.split(maxsplit=1)
+    if len(args) > 1 and args[1].lower() == "buy":
+        bot.send_message(
+            message.chat.id,
+            "🎫 To enter now, run /buyticket or /buyticket 5 to buy multiple tickets."
+        )
+
+
 # 3. USER COMMAND: BUY TICKET (WITH STARS INVOICE GENERATOR)
 @bot.message_handler(commands=['buyticket'])
 def buy_ticket(message):
