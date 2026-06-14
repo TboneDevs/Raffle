@@ -62,21 +62,35 @@ def start_giveaway(message):
     if ' ' in text_content:
         args = text_content.split(' ', 1)[1].strip()
     else:
-        return bot.reply_to(message, "❌ Invalid format. Use: `/startgiveaway Prize Name | Price | Amount accounts`")
+        return bot.reply_to(message, "❌ Invalid format. Use: `/startgiveaway Prize Name 15 2`")
 
-    if args.count('|') < 2:
-        return bot.reply_to(message, "❌ Invalid format. Example: `/startgiveaway 18k Coin Account | 15 | 2 accounts`")
-    
     try:
-        prize_part, price_part, amount_part = args.split('|', 2)
-        prize = prize_part.strip()
-        price = int(price_part.strip())
+        # Supports both formats:
+        # /startgiveaway Prize Name | 15 | 2 accounts
+        # /startgiveaway Prize Name 15 2
+        if '|' in args:
+            if args.count('|') < 2:
+                return bot.reply_to(message, "❌ Invalid format. Example: `/startgiveaway 18k Coin Account | 15 | 2 accounts`")
+            prize_part, price_part, amount_part = args.split('|', 2)
+            prize = prize_part.strip()
+            price = int(price_part.strip())
+            amount_digits = re.findall(r'\d+', amount_part)
+            if not amount_digits:
+                return bot.reply_to(message, "❌ Quantity not found. Example: `2 accounts`")
+            amount = int(amount_digits[0])
+        else:
+            parts = args.rsplit(' ', 2)
+            if len(parts) < 3:
+                return bot.reply_to(message, "❌ Invalid format. Example: `/startgiveaway test 1 1`")
+            prize = parts[0].strip()
+            price = int(parts[1].strip())
+            amount = int(parts[2].strip())
+
+        if not prize:
+            return bot.reply_to(message, "❌ Prize name cannot be empty.")
         
-        amount_digits = re.findall(r'\d+', amount_part)
-        if not amount_digits:
-            return bot.reply_to(message, "❌ Quantity not found. Example: `2 accounts`")
-        
-        amount = int(amount_digits[0])
+        if price <= 0:
+            return bot.reply_to(message, "❌ Ticket price must be greater than 0.")
         
         if amount <= 0:
             return bot.reply_to(message, "❌ Quantity must be greater than 0.")
@@ -105,7 +119,7 @@ def start_giveaway(message):
         
         safe_log(f"📢 [LOG] Giveaway started by Admin. Prize: {prize} ({amount}x)")
     except ValueError:
-        bot.reply_to(message, "❌ Invalid input. Please ensure Price and Quantity are valid numbers.")
+        bot.reply_to(message, "❌ Invalid input. Use: `/startgiveaway Prize Name 15 2`")
     except Exception as e:
         bot.reply_to(message, f"❌ System Error: {str(e)}")
 
