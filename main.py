@@ -1,11 +1,16 @@
 import telebot
+import telebot
 import random
 import os
-import re  
+import re
 from telebot import types
 
 # 1. BOT SETUP & CONFIGURATION
-BOT_TOKEN = "8644664816:AAH9yTil0KsFETrguw7WX2gYrMv-0VBUTUs"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+if not BOT_TOKEN:
+    raise ValueError("BOT_TOKEN environment variable is missing")
+
 bot = telebot.TeleBot(BOT_TOKEN)
 
 OWNER_ID = 6531314640
